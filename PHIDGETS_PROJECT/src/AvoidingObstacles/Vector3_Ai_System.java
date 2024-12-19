@@ -29,18 +29,23 @@ public class Vector3_Ai_System {
 	public static boolean Human_Right = false;
 	public static boolean Human_Backward = false;
 	
+	public static boolean Auto_Breaking = false;
+	
 	public static DistanceSensor sonar;
 	public static DCMotor leftMotors;
 	public static DCMotor rightMotors;
 	
 	public static double SetSpeed = 100;
+	public static double SetRotationSpeed = 100;
 	
 	public static boolean VectorSetup = false;
+	public static boolean Human_Breaks = false;
 	
 	public void MainRun() throws Exception 
 	{
         //Connect to wireless rover
         Net.addServer("", "192.168.100.1", 5661, "", 0);
+        
 
         leftMotors = new DCMotor();
         rightMotors = new DCMotor();
@@ -96,8 +101,17 @@ public class Vector3_Ai_System {
         	{
         		if (Human_Backward && !Human_Forward) 
         		{
-        			leftMotors.setBrakingEnabled(false);
-        			rightMotors.setBrakingEnabled(false);
+        			if (Auto_Breaking) 
+        			{
+        				leftMotors.setBrakingEnabled(false);
+            			rightMotors.setBrakingEnabled(false);
+        			}
+        			
+        			if (Human_Breaks) 
+        			{
+        				leftMotors.setBrakingEnabled(true);
+            			rightMotors.setBrakingEnabled(true);
+        			}
         			
         			if (Human_Left && Human_Right) 
         			{
@@ -107,14 +121,14 @@ public class Vector3_Ai_System {
         			}
         			else if (Human_Left) 
         			{
-        				leftMotors.setTargetVelocity(-0.4 * (SetSpeed / 100));
+        				leftMotors.setTargetVelocity((-0.2 * (SetSpeed / 100)) * (1 - (SetRotationSpeed / 100)));
         				rightMotors.setTargetVelocity(-1 * (SetSpeed / 100));
         				continue;
         			}
         			else if (Human_Right) 
         			{
         				leftMotors.setTargetVelocity(-1 * (SetSpeed / 100));
-        				rightMotors.setTargetVelocity(-0.4 * (SetSpeed / 100));
+        				rightMotors.setTargetVelocity((-0.2 * (SetSpeed / 100)) * (1 - (SetRotationSpeed / 100)));
         				continue;
         			}
         			else 
@@ -123,14 +137,21 @@ public class Vector3_Ai_System {
         				rightMotors.setTargetVelocity(-1 * (SetSpeed / 100));
         				continue;
         			}
-        			
-        			
         		}
         		
         		if (!Human_Backward && Human_Forward) 
         		{
-        			leftMotors.setBrakingEnabled(false);
-        			rightMotors.setBrakingEnabled(false);
+        			if (Auto_Breaking) 
+        			{
+        				leftMotors.setBrakingEnabled(false);
+            			rightMotors.setBrakingEnabled(false);
+        			}
+        			
+        			if (Human_Breaks) 
+        			{
+        				leftMotors.setBrakingEnabled(true);
+            			rightMotors.setBrakingEnabled(true);
+        			}
         			
         			if (Human_Left && Human_Right) 
         			{
@@ -140,14 +161,14 @@ public class Vector3_Ai_System {
         			}
         			else if (Human_Left) 
         			{
-        				leftMotors.setTargetVelocity(0.4 * (SetSpeed / 100));
+        				leftMotors.setTargetVelocity((0.2 * (SetSpeed / 100)) * (1 - (SetRotationSpeed / 100)));
         				rightMotors.setTargetVelocity(1 * (SetSpeed / 100));
         				continue;
         			}
         			else if (Human_Right) 
         			{
         				leftMotors.setTargetVelocity(1 * (SetSpeed / 100));
-        				rightMotors.setTargetVelocity(0.4 * (SetSpeed / 100));
+        				rightMotors.setTargetVelocity((0.2 * (SetSpeed / 100)) * (1 - (SetRotationSpeed / 100)));
         				continue;
         			}
         			else 
@@ -160,8 +181,17 @@ public class Vector3_Ai_System {
         		
         		if (!Human_Backward && !Human_Forward) 
         		{
-        			leftMotors.setBrakingEnabled(false);
-        			rightMotors.setBrakingEnabled(false);
+        			if (Auto_Breaking) 
+        			{
+        				leftMotors.setBrakingEnabled(false);
+            			rightMotors.setBrakingEnabled(false);
+        			}
+        			
+        			if (Human_Breaks) 
+        			{
+        				leftMotors.setBrakingEnabled(true);
+            			rightMotors.setBrakingEnabled(true);
+        			}
         			
         			if (Human_Left && Human_Right) 
         			{
@@ -174,20 +204,29 @@ public class Vector3_Ai_System {
         			}
         			else if (Human_Left) 
         			{
-        				leftMotors.setTargetVelocity(-1 * (SetSpeed / 100));
-        				rightMotors.setTargetVelocity(1 * (SetSpeed / 100));
+        				leftMotors.setTargetVelocity((-1 * (SetSpeed / 100)) * (SetRotationSpeed / 100));
+        				rightMotors.setTargetVelocity((1 * (SetSpeed / 100)) * (SetRotationSpeed / 100));
         				continue;
         			}
         			else if (Human_Right) 
         			{
-        				leftMotors.setTargetVelocity(1 * (SetSpeed / 100));
-        				rightMotors.setTargetVelocity(-1 * (SetSpeed / 100));
+        				leftMotors.setTargetVelocity((1 * (SetSpeed / 100)) * (SetRotationSpeed / 100));
+        				rightMotors.setTargetVelocity((-1 * (SetSpeed / 100)) * (SetRotationSpeed / 100));
         				continue;
         			}
         			else 
         			{
-        				leftMotors.setBrakingEnabled(true);
-            			rightMotors.setBrakingEnabled(true);
+        				if (Auto_Breaking) 
+            			{
+        					leftMotors.setBrakingEnabled(true);
+                			rightMotors.setBrakingEnabled(true);
+            			}
+        				
+        				if (Human_Breaks) 
+            			{
+            				leftMotors.setBrakingEnabled(true);
+                			rightMotors.setBrakingEnabled(true);
+            			}
             			
         				leftMotors.setTargetVelocity(0);
         				rightMotors.setTargetVelocity(0);
@@ -196,14 +235,20 @@ public class Vector3_Ai_System {
         		}
         		else 
         		{
-        			leftMotors.setBrakingEnabled(false);
-        			rightMotors.setBrakingEnabled(false);
+        			if (Auto_Breaking) 
+        			{
+        				leftMotors.setBrakingEnabled(false);
+            			rightMotors.setBrakingEnabled(false);
+        			}
         			
-        			if (Human_Left && Human_Right) 
+        			if (Human_Breaks) 
         			{
         				leftMotors.setBrakingEnabled(true);
             			rightMotors.setBrakingEnabled(true);
-            			
+        			}
+        			
+        			if (Human_Left && Human_Right) 
+        			{
         				leftMotors.setTargetVelocity(0);
         				rightMotors.setTargetVelocity(0);
         				continue;
@@ -222,9 +267,18 @@ public class Vector3_Ai_System {
         			}
         			else 
         			{
-        				leftMotors.setBrakingEnabled(true);
-            			rightMotors.setBrakingEnabled(true);
-            			
+        				if (Auto_Breaking) 
+            			{
+        					leftMotors.setBrakingEnabled(true);
+                			rightMotors.setBrakingEnabled(true);
+            			}
+        				
+        				if (Human_Breaks) 
+            			{
+            				leftMotors.setBrakingEnabled(true);
+                			rightMotors.setBrakingEnabled(true);
+            			}
+
         				leftMotors.setTargetVelocity(0);
         				rightMotors.setTargetVelocity(0);
         				continue;

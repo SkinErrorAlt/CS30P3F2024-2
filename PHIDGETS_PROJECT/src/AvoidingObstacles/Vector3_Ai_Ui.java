@@ -26,15 +26,34 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.JSlider;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Vector3_Ai_Ui extends Vector3_Ai_System 
 {
-
+	protected static JPanel InformationPannel;
+	protected static JPanel ControlPannel;
+	
 	protected static JCheckBox ObjectInView;
 	protected static JLabel ObjectDistance_Information;
 	protected static JProgressBar progressBar;
+	
 	protected static JButton Toggle_Ai;
 	protected static JSlider ControlSpeed_Value;
 	protected static JLabel AiHumanControl_Information;
+	
+	protected static JPanel Connecting;
+	protected static JLabel Loading_Connection_Status;
+	protected static JLabel IP;
+	protected static JLabel Loading_Message;
+	
+	protected static JButton Human_Control_Module;
+	
+	protected static JLabel AiWheelVelocity_Information_Left;
+	protected static JLabel AiWheelVelocity_Information_Right;
+
+	protected static JSlider ControlRotationSpeed_Value;
+	
 	private JFrame frame;
 
 	public void MainRun() throws InterruptedException {
@@ -69,7 +88,41 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JPanel InformationPannel = new JPanel();
+		Connecting = new JPanel();
+		Connecting.setBackground(new Color(0, 64, 0));
+		Connecting.setBounds(0, 0, 1308, 869);
+		frame.getContentPane().add(Connecting);
+		Connecting.setLayout(null);
+		
+		Loading_Connection_Status = new JLabel("No Connection...");
+		Loading_Connection_Status.setHorizontalAlignment(SwingConstants.CENTER);
+		Loading_Connection_Status.setForeground(new Color(255, 128, 128));
+		Loading_Connection_Status.setFont(new Font("OCR A Extended", Font.PLAIN, 17));
+		Loading_Connection_Status.setBounds(412, 395, 483, 78);
+		Connecting.add(Loading_Connection_Status);
+		
+		JLabel Loading_Vector = new JLabel("Vector3");
+		Loading_Vector.setHorizontalAlignment(SwingConstants.CENTER);
+		Loading_Vector.setForeground(Color.WHITE);
+		Loading_Vector.setFont(new Font("OCR A Extended", Font.BOLD | Font.ITALIC, 56));
+		Loading_Vector.setBounds(412, 357, 483, 78);
+		Connecting.add(Loading_Vector);
+		
+		IP = new JLabel("");
+		IP.setHorizontalAlignment(SwingConstants.CENTER);
+		IP.setForeground(new Color(255, 255, 255));
+		IP.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
+		IP.setBounds(412, 412, 483, 78);
+		Connecting.add(IP);
+		
+		Loading_Message = new JLabel("");
+		Loading_Message.setHorizontalAlignment(SwingConstants.CENTER);
+		Loading_Message.setForeground(Color.WHITE);
+		Loading_Message.setFont(new Font("OCR A Extended", Font.PLAIN, 10));
+		Loading_Message.setBounds(412, 436, 483, 78);
+		Connecting.add(Loading_Message);
+		
+		InformationPannel = new JPanel();
 		InformationPannel.setDoubleBuffered(false);
 		InformationPannel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		InformationPannel.setBackground(new Color(0, 64, 0));
@@ -78,14 +131,12 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 		InformationPannel.setLayout(null);
 		
 		ObjectInView = new JCheckBox("Infront of Object");
+		ObjectInView.setFocusCycleRoot(true);
 		ObjectInView.setBorderPainted(true);
 		ObjectInView.setIconTextGap(5);
-		ObjectInView.setFocusPainted(false);
 		ObjectInView.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		ObjectInView.setVerifyInputWhenFocusTarget(false);
-		ObjectInView.setRolloverEnabled(false);
 		ObjectInView.setRequestFocusEnabled(false);
-		ObjectInView.setFocusable(false);
 		ObjectInView.setForeground(new Color(255, 255, 255));
 		ObjectInView.setBackground(new Color(0, 128, 0));
 		ObjectInView.setFont(new Font("OCR A Extended", Font.PLAIN, 22));
@@ -111,105 +162,6 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 		ObjectDistanceTab.add(ObjectDistance_Information);
 		ObjectDistance_Information.setHorizontalAlignment(SwingConstants.LEFT);
 		ObjectDistance_Information.setFont(new Font("OCR A Extended", Font.PLAIN, 17));
-		
-		JPanel ControlPannel = new JPanel();
-		ControlPannel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-		ControlPannel.setBackground(new Color(0, 128, 64));
-		ControlPannel.setBounds(1131, 0, 177, 869);
-		frame.getContentPane().add(ControlPannel);
-		ControlPannel.setLayout(null);
-		
-		Toggle_Ai = new JButton("Start Vector");
-		Toggle_Ai.setFocusable(false);
-		Toggle_Ai.setVerifyInputWhenFocusTarget(false);
-		Toggle_Ai.setRequestFocusEnabled(false);
-		Toggle_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 15));
-		Toggle_Ai.setForeground(new Color(255, 255, 255));
-		Toggle_Ai.setBackground(new Color(0, 64, 0));
-		Toggle_Ai.setBounds(10, 11, 157, 28);
-		ControlPannel.add(Toggle_Ai);
-		
-		Toggle_Ai.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				Vector3_Ai_System.Ai_Active = !Vector3_Ai_System.Ai_Active;
-				
-				if (!Vector3_Ai_System.Ai_Active) 
-				{
-					Toggle_Ai.setBackground(new Color(0, 64, 0));
-					Toggle_Ai.setText("Start Vector3");
-				}
-				else 
-				{
-					Toggle_Ai.setBackground(new Color(64, 0, 0));
-					Toggle_Ai.setText("Stop Vector3");
-				}
-			}
-		});
-		
-		JButton L_Spin_Ai = new JButton("L Spin");
-		L_Spin_Ai.setFocusable(false);
-		L_Spin_Ai.setRequestFocusEnabled(false);
-		L_Spin_Ai.setForeground(Color.WHITE);
-		L_Spin_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
-		L_Spin_Ai.setBackground(new Color(128, 128, 128));
-		L_Spin_Ai.setBounds(10, 50, 78, 28);
-		ControlPannel.add(L_Spin_Ai);
-		
-		JButton R_Spin_Ai = new JButton("R Spin");
-		R_Spin_Ai.setFocusable(false);
-		R_Spin_Ai.setRequestFocusEnabled(false);
-		R_Spin_Ai.setForeground(Color.WHITE);
-		R_Spin_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
-		R_Spin_Ai.setBackground(Color.GRAY);
-		R_Spin_Ai.setBounds(89, 50, 78, 28);
-		ControlPannel.add(R_Spin_Ai);
-		
-		JButton Toggle_ObjectAvoidance = new JButton("Avoid Objects");
-		Toggle_ObjectAvoidance.setVerifyInputWhenFocusTarget(false);
-		Toggle_ObjectAvoidance.setRequestFocusEnabled(false);
-		Toggle_ObjectAvoidance.setForeground(Color.WHITE);
-		Toggle_ObjectAvoidance.setFont(new Font("OCR A Extended", Font.PLAIN, 15));
-		Toggle_ObjectAvoidance.setFocusable(false);
-		Toggle_ObjectAvoidance.setBackground(new Color(0, 64, 0));
-		Toggle_ObjectAvoidance.setBounds(10, 162, 157, 28);
-		ControlPannel.add(Toggle_ObjectAvoidance);
-		
-		JButton StopSpin_Ai = new JButton("Stop Spin");
-		StopSpin_Ai.setRequestFocusEnabled(false);
-		StopSpin_Ai.setForeground(Color.WHITE);
-		StopSpin_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
-		StopSpin_Ai.setFocusable(false);
-		StopSpin_Ai.setBackground(Color.GRAY);
-		StopSpin_Ai.setBounds(10, 83, 157, 28);
-		ControlPannel.add(StopSpin_Ai);
-		
-		JPanel ControlSpeed_Ai = new JPanel();
-		ControlSpeed_Ai.setLayout(null);
-		ControlSpeed_Ai.setBackground(new Color(128, 128, 128));
-		ControlSpeed_Ai.setBounds(10, 201, 157, 49);
-		ControlPannel.add(ControlSpeed_Ai);
-		
-		JLabel ControlSpeed_Title = new JLabel("Set Speed");
-		ControlSpeed_Title.setHorizontalTextPosition(SwingConstants.CENTER);
-		ControlSpeed_Title.setHorizontalAlignment(SwingConstants.CENTER);
-		ControlSpeed_Title.setForeground(Color.WHITE);
-		ControlSpeed_Title.setFont(new Font("OCR A Extended", Font.BOLD, 17));
-		ControlSpeed_Title.setBounds(0, 0, 157, 26);
-		ControlSpeed_Ai.add(ControlSpeed_Title);
-		
-		ControlSpeed_Value = new JSlider();
-		ControlSpeed_Value.setValue(70);
-		ControlSpeed_Value.setSnapToTicks(true);
-		ControlSpeed_Value.setMinorTickSpacing(1);
-		ControlSpeed_Value.setForeground(Color.LIGHT_GRAY);
-		ControlSpeed_Value.setFont(new Font("OCR A Extended", Font.PLAIN, 11));
-		ControlSpeed_Value.setFocusable(false);
-		ControlSpeed_Value.setBackground(Color.GRAY);
-		ControlSpeed_Value.setBounds(0, 20, 157, 26);
-		ControlSpeed_Ai.add(ControlSpeed_Value);
 		
 		progressBar = new JProgressBar();
 		progressBar.setBackground(new Color(255, 255, 255));
@@ -324,7 +276,7 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 		LocationSection_Title.setBounds(681, 55, 440, 33);
 		InformationPannel.add(LocationSection_Title);
 		
-		JLabel LocationSection_Text = new JLabel("OBJECT");
+		JLabel LocationSection_Text = new JLabel("Vector3");
 		LocationSection_Text.setHorizontalAlignment(SwingConstants.CENTER);
 		LocationSection_Text.setForeground(Color.WHITE);
 		LocationSection_Text.setFont(new Font("OCR A Extended", Font.BOLD | Font.ITALIC, 17));
@@ -359,14 +311,15 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 		AiCoordinates_Information_Y.setBounds(20, 56, 280, 33);
 		AiCoordinates.add(AiCoordinates_Information_Y);
 		
-		JButton Human_Control_Module = new JButton("Human Controller");
-		Human_Control_Module.setFocusTraversalPolicyProvider(true);
-		Human_Control_Module.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		Human_Control_Module = new JButton("");
 		Human_Control_Module.setVerifyInputWhenFocusTarget(false);
+		Human_Control_Module.setRolloverEnabled(false);
+		Human_Control_Module.setFocusPainted(false);
+		Human_Control_Module.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		Human_Control_Module.setForeground(Color.WHITE);
 		Human_Control_Module.setFont(new Font("OCR A Extended", Font.PLAIN, 15));
 		Human_Control_Module.setBackground(new Color(255, 128, 0));
-		Human_Control_Module.setBounds(10, 652, 206, 206);
+		Human_Control_Module.setBounds(0, 0, 1, 1);
 		InformationPannel.add(Human_Control_Module);
 		
 		Human_Control_Module.addKeyListener(new KeyAdapter() 
@@ -374,38 +327,39 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 			@Override
 			public void keyPressed(KeyEvent e) 
 			{
-				if (Human_Control_Module.isFocusOwner()) 
+				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'w' || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_KP_UP) 
 				{
-					if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'w' || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_KP_UP) 
-					{
-						Vector3_Ai_System.Human_Forward = true;
-					}
+					Vector3_Ai_System.Human_Forward = true;
+				}
+				
+				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'a' || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_KP_LEFT) 
+				{
+					Vector3_Ai_System.Human_Left = true;
+				}
+				
+				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'd' || e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_KP_RIGHT) 
+				{
+					Vector3_Ai_System.Human_Right = true;
+				}
+				
+				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 's' || e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_KP_DOWN) 
+				{
+					Vector3_Ai_System.Human_Backward = true;
+				}
+				
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) 
+				{
+					Vector3_Ai_System.Human_Breaks = true;
+				}
+				
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) 
+				{
+					Vector3_Ai_System.Human_Control_Active = !Vector3_Ai_System.Human_Control_Active;
 					
-					if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'a' || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_KP_LEFT) 
-					{
-						Vector3_Ai_System.Human_Left = true;
-					}
-					
-					if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'd' || e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_KP_RIGHT) 
-					{
-						Vector3_Ai_System.Human_Right = true;
-					}
-					
-					if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 's' || e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_KP_DOWN) 
-					{
-						Vector3_Ai_System.Human_Backward = true;
-					}
-					
-					if (e.getKeyCode() == KeyEvent.VK_ENTER) 
-					{
-						Vector3_Ai_System.Human_Control_Active = !Vector3_Ai_System.Human_Control_Active;
-						System.out.println("Human Control: " + Vector3_Ai_System.Human_Control_Active);
-						
-						Vector3_Ai_System.Human_Forward = false;
-						Vector3_Ai_System.Human_Left = false;
-						Vector3_Ai_System.Human_Right = false;
-						Vector3_Ai_System.Human_Backward = false;
-					}
+					Vector3_Ai_System.Human_Forward = false;
+					Vector3_Ai_System.Human_Left = false;
+					Vector3_Ai_System.Human_Right = false;
+					Vector3_Ai_System.Human_Backward = false;
 				}
 			}
 			@Override
@@ -415,17 +369,25 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 				{
 					Vector3_Ai_System.Human_Forward = false;
 				}
+				
 				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'a' || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_KP_LEFT) 
 				{
 					Vector3_Ai_System.Human_Left = false;
 				}
+				
 				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 'd' || e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_KP_RIGHT) 
 				{
 					Vector3_Ai_System.Human_Right = false;
 				}
+				
 				if ((e.getKeyChar() + "").toLowerCase().charAt(0) == 's' || e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_KP_DOWN) 
 				{
 					Vector3_Ai_System.Human_Backward = false;
+				}
+				
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) 
+				{
+					Vector3_Ai_System.Human_Breaks = false;
 				}
 			}
 		});
@@ -469,6 +431,223 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 		AiObstacleAvoidance_Information.setFont(new Font("OCR A Extended", Font.PLAIN, 17));
 		AiObstacleAvoidance_Information.setBounds(204, 0, 236, 33);
 		AiObstacleAvoidance.add(AiObstacleAvoidance_Information);
+		
+		JPanel AiWheelVelocity = new JPanel();
+		AiWheelVelocity.setLayout(null);
+		AiWheelVelocity.setBackground(new Color(0, 128, 0));
+		AiWheelVelocity.setBounds(681, 200, 440, 90);
+		InformationPannel.add(AiWheelVelocity);
+		
+		JLabel AiVelocity_Title = new JLabel("Current Wheel Rotation Speeds:");
+		AiVelocity_Title.setHorizontalAlignment(SwingConstants.LEFT);
+		AiVelocity_Title.setForeground(Color.WHITE);
+		AiVelocity_Title.setFont(new Font("OCR A Extended", Font.BOLD, 17));
+		AiVelocity_Title.setBounds(0, 0, 440, 33);
+		AiWheelVelocity.add(AiVelocity_Title);
+		
+		AiWheelVelocity_Information_Left = new JLabel("Left: 0");
+		AiWheelVelocity_Information_Left.setHorizontalAlignment(SwingConstants.LEFT);
+		AiWheelVelocity_Information_Left.setForeground(Color.WHITE);
+		AiWheelVelocity_Information_Left.setFont(new Font("OCR A Extended", Font.PLAIN, 17));
+		AiWheelVelocity_Information_Left.setBounds(20, 29, 280, 33);
+		AiWheelVelocity.add(AiWheelVelocity_Information_Left);
+		
+		AiWheelVelocity_Information_Right = new JLabel("Right: 0");
+		AiWheelVelocity_Information_Right.setHorizontalAlignment(SwingConstants.LEFT);
+		AiWheelVelocity_Information_Right.setForeground(Color.WHITE);
+		AiWheelVelocity_Information_Right.setFont(new Font("OCR A Extended", Font.PLAIN, 17));
+		AiWheelVelocity_Information_Right.setBounds(20, 56, 280, 33);
+		AiWheelVelocity.add(AiWheelVelocity_Information_Right);
+		
+		ControlPannel = new JPanel();
+		ControlPannel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+		ControlPannel.setBackground(new Color(0, 128, 64));
+		ControlPannel.setBounds(1131, 0, 177, 869);
+		frame.getContentPane().add(ControlPannel);
+		ControlPannel.setLayout(null);
+		
+		Toggle_Ai = new JButton("Start Vector");
+		Toggle_Ai.setFocusable(false);
+		Toggle_Ai.setVerifyInputWhenFocusTarget(false);
+		Toggle_Ai.setRequestFocusEnabled(false);
+		Toggle_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 15));
+		Toggle_Ai.setForeground(new Color(255, 255, 255));
+		Toggle_Ai.setBackground(new Color(0, 64, 0));
+		Toggle_Ai.setBounds(10, 11, 157, 28);
+		ControlPannel.add(Toggle_Ai);
+		
+		Toggle_Ai.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				Vector3_Ai_System.Ai_Active = !Vector3_Ai_System.Ai_Active;
+				
+				if (!Vector3_Ai_System.Ai_Active) 
+				{
+					Toggle_Ai.setBackground(new Color(0, 64, 0));
+					Toggle_Ai.setText("Start Vector3");
+				}
+				else 
+				{
+					Toggle_Ai.setBackground(new Color(64, 0, 0));
+					Toggle_Ai.setText("Stop Vector3");
+				}
+			}
+		});
+		
+		JButton L_Spin_Ai = new JButton("L Spin");
+		L_Spin_Ai.setFocusable(false);
+		L_Spin_Ai.setRequestFocusEnabled(false);
+		L_Spin_Ai.setForeground(Color.WHITE);
+		L_Spin_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
+		L_Spin_Ai.setBackground(new Color(128, 128, 128));
+		L_Spin_Ai.setBounds(10, 50, 78, 28);
+		ControlPannel.add(L_Spin_Ai);
+		
+		JButton R_Spin_Ai = new JButton("R Spin");
+		R_Spin_Ai.setFocusable(false);
+		R_Spin_Ai.setRequestFocusEnabled(false);
+		R_Spin_Ai.setForeground(Color.WHITE);
+		R_Spin_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
+		R_Spin_Ai.setBackground(Color.GRAY);
+		R_Spin_Ai.setBounds(89, 50, 78, 28);
+		ControlPannel.add(R_Spin_Ai);
+		
+		JButton Toggle_ObjectAvoidance = new JButton("Avoid Objects");
+		Toggle_ObjectAvoidance.setVerifyInputWhenFocusTarget(false);
+		Toggle_ObjectAvoidance.setRequestFocusEnabled(false);
+		Toggle_ObjectAvoidance.setForeground(Color.WHITE);
+		Toggle_ObjectAvoidance.setFont(new Font("OCR A Extended", Font.PLAIN, 15));
+		Toggle_ObjectAvoidance.setFocusable(false);
+		Toggle_ObjectAvoidance.setBackground(new Color(0, 64, 0));
+		Toggle_ObjectAvoidance.setBounds(10, 162, 157, 28);
+		ControlPannel.add(Toggle_ObjectAvoidance);
+		
+		JButton StopSpin_Ai = new JButton("Stop Spin");
+		StopSpin_Ai.setRequestFocusEnabled(false);
+		StopSpin_Ai.setForeground(Color.WHITE);
+		StopSpin_Ai.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
+		StopSpin_Ai.setFocusable(false);
+		StopSpin_Ai.setBackground(Color.GRAY);
+		StopSpin_Ai.setBounds(10, 83, 157, 28);
+		ControlPannel.add(StopSpin_Ai);
+		
+		JPanel ControlSpeed_Ai = new JPanel();
+		ControlSpeed_Ai.setLayout(null);
+		ControlSpeed_Ai.setBackground(new Color(128, 128, 128));
+		ControlSpeed_Ai.setBounds(10, 201, 157, 49);
+		ControlPannel.add(ControlSpeed_Ai);
+		
+		JLabel ControlSpeed_Title = new JLabel("Set Wheel Speed");
+		ControlSpeed_Title.setHorizontalTextPosition(SwingConstants.CENTER);
+		ControlSpeed_Title.setHorizontalAlignment(SwingConstants.CENTER);
+		ControlSpeed_Title.setForeground(Color.WHITE);
+		ControlSpeed_Title.setFont(new Font("OCR A Extended", Font.BOLD, 14));
+		ControlSpeed_Title.setBounds(0, 0, 157, 26);
+		ControlSpeed_Ai.add(ControlSpeed_Title);
+		
+		ControlSpeed_Value = new JSlider();
+		ControlSpeed_Value.setValue(70);
+		ControlSpeed_Value.setSnapToTicks(true);
+		ControlSpeed_Value.setMinorTickSpacing(1);
+		ControlSpeed_Value.setForeground(Color.LIGHT_GRAY);
+		ControlSpeed_Value.setFont(new Font("OCR A Extended", Font.PLAIN, 11));
+		ControlSpeed_Value.setFocusable(false);
+		ControlSpeed_Value.setBackground(Color.GRAY);
+		ControlSpeed_Value.setBounds(0, 20, 157, 26);
+		ControlSpeed_Ai.add(ControlSpeed_Value);
+		
+		JPanel ControlRotationSpeed_Ai = new JPanel();
+		ControlRotationSpeed_Ai.setLayout(null);
+		ControlRotationSpeed_Ai.setBackground(Color.GRAY);
+		ControlRotationSpeed_Ai.setBounds(10, 261, 157, 49);
+		ControlPannel.add(ControlRotationSpeed_Ai);
+		
+		JLabel ControlRotationSpeed_Title = new JLabel("Set Rotation Speed");
+		ControlRotationSpeed_Title.setHorizontalTextPosition(SwingConstants.CENTER);
+		ControlRotationSpeed_Title.setHorizontalAlignment(SwingConstants.CENTER);
+		ControlRotationSpeed_Title.setForeground(Color.WHITE);
+		ControlRotationSpeed_Title.setFont(new Font("OCR A Extended", Font.BOLD, 14));
+		ControlRotationSpeed_Title.setBounds(0, 0, 157, 26);
+		ControlRotationSpeed_Ai.add(ControlRotationSpeed_Title);
+		
+		ControlRotationSpeed_Value = new JSlider();
+		ControlRotationSpeed_Value.setValue(70);
+		ControlRotationSpeed_Value.setSnapToTicks(true);
+		ControlRotationSpeed_Value.setMinorTickSpacing(1);
+		ControlRotationSpeed_Value.setForeground(Color.LIGHT_GRAY);
+		ControlRotationSpeed_Value.setFont(new Font("OCR A Extended", Font.PLAIN, 11));
+		ControlRotationSpeed_Value.setFocusable(false);
+		ControlRotationSpeed_Value.setBackground(Color.GRAY);
+		ControlRotationSpeed_Value.setBounds(0, 20, 157, 26);
+		ControlRotationSpeed_Ai.add(ControlRotationSpeed_Value);
+		
+		InformationPannel.setVisible(false);
+		ControlPannel.setVisible(false);
+	}
+	
+	public void UpdateLoading() throws InterruptedException 
+	{
+		Connecting.setVisible(true);
+		InformationPannel.setVisible(false);
+		ControlPannel.setVisible(false);
+		
+		int SleepTime = 0;
+		int CurrentDotAmount = 0;
+		
+		while (!AvoidingObstacles.Vector3_Ai_System.VectorSetup) 
+		{
+			InformationPannel.setVisible(false);
+			ControlPannel.setVisible(false);
+			
+			SleepTime = 0;
+			while (SleepTime < 500) 
+			{
+				if (AvoidingObstacles.Vector3_Ai_System.VectorSetup) 
+				{
+					break;
+				}
+				
+				SleepTime++;
+				Thread.sleep(1);
+			}
+			
+			if (AvoidingObstacles.Vector3_Ai_System.VectorSetup) 
+			{
+				Loading_Connection_Status.setText("Connection Found!");
+				Loading_Connection_Status.setForeground(Color.green);
+				IP.setText("IP: 192.168.100.1");
+				Loading_Message.setText("Thank you for waiting :>");
+				
+				Thread.sleep(2500);
+				break;
+			}
+			
+			String Dots = "";
+			
+			for (int i = 0; i < CurrentDotAmount; i++) 
+			{
+				Dots = Dots + ".";
+			}
+			
+			Loading_Connection_Status.setText("No Connection" + Dots);
+			
+			if (CurrentDotAmount < 3) 
+			{
+				CurrentDotAmount++;
+			}
+			else 
+			{
+				CurrentDotAmount = 0;
+			}
+		}
+		
+		Connecting.setVisible(false);
+		InformationPannel.setVisible(true);
+		ControlPannel.setVisible(true);
+		
+		Human_Control_Module.requestFocusInWindow();
 	}
 }
 
