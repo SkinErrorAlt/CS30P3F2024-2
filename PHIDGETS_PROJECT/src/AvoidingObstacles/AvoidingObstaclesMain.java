@@ -4,6 +4,8 @@ package AvoidingObstacles;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.phidget22.PhidgetException;
+
 public class AvoidingObstaclesMain {
 	public static void main(String[] args) throws InterruptedException {
 		// Create a thread pool with 3 threads
@@ -19,9 +21,17 @@ public class AvoidingObstaclesMain {
 			try 
 			{
 				aiSystem.MainRun();
-			} 
+			}
+			catch (PhidgetException e) 
+			{
+				System.err.println("Failed Connection");
+				aiSystem.ConnectionFailed = true;
+				aiUi.ConnectionFailed = true;
+				aiInfo.ConnectionFailed = true;
+			}
 			catch (Exception e) 
 			{
+				System.err.println("_| Failed something |_");
 				e.printStackTrace();
 			}
 		});

@@ -16,6 +16,8 @@ import java.awt.Cursor;
 import javax.swing.SwingConstants;
 
 public class Vector3_Ai_System {
+	public boolean ConnectionFailed = false;
+	
 	public static boolean InfrontObject = false;
 	public static double DistanceFromObject = 0;
 	public static double DistanceStrength = 200;
@@ -45,7 +47,6 @@ public class Vector3_Ai_System {
 	{
         //Connect to wireless rover
         Net.addServer("", "192.168.100.1", 5661, "", 0);
-        
 
         leftMotors = new DCMotor();
         rightMotors = new DCMotor();
@@ -55,7 +56,6 @@ public class Vector3_Ai_System {
         leftMotors.setChannel(0);
         rightMotors.setChannel(1);
         
-        //Open
         leftMotors.open(5000);
         rightMotors.open(5000);
         sonar.open(5000);
@@ -66,7 +66,7 @@ public class Vector3_Ai_System {
         
         boolean LastHuman_Control_Active = false;
 
-        while (true) 
+        while (!ConnectionFailed) 
         {
         	if (!Ai_Active) 
         	{

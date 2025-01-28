@@ -31,6 +31,8 @@ import java.util.concurrent.Executors;
 
 public class Vector3_Ai_Ui extends Vector3_Ai_System 
 {
+	public boolean ConnectionFailed = false;
+	
 	protected static JPanel InformationPannel;
 	protected static JPanel ControlPannel;
 	
@@ -609,8 +611,23 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 					break;
 				}
 				
+				if (ConnectionFailed) 
+				{
+					break;
+				}
+				
 				SleepTime++;
 				Thread.sleep(1);
+			}
+			
+			if (ConnectionFailed) 
+			{
+				Loading_Connection_Status.setText("Connection Failed!");
+				Loading_Connection_Status.setForeground(Color.red);
+				IP.setText("IP: ???.???.???.?");
+				IP.setForeground(Color.red);
+				Loading_Message.setText("Unable to connect to Vector3. Please restart and try again.");
+				break;
 			}
 			
 			if (AvoidingObstacles.Vector3_Ai_System.VectorSetup) 
@@ -643,11 +660,13 @@ public class Vector3_Ai_Ui extends Vector3_Ai_System
 			}
 		}
 		
-		Connecting.setVisible(false);
-		InformationPannel.setVisible(true);
-		ControlPannel.setVisible(true);
-		
-		Human_Control_Module.requestFocusInWindow();
+		if (!ConnectionFailed) 
+		{
+			Connecting.setVisible(false);
+			InformationPannel.setVisible(true);
+			ControlPannel.setVisible(true);	
+			Human_Control_Module.requestFocusInWindow();
+		}
 	}
 }
 

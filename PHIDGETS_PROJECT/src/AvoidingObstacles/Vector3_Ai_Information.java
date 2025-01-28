@@ -1,6 +1,8 @@
 package AvoidingObstacles;
 import com.phidget22.PhidgetException;
-public class Vector3_Ai_Information extends Vector3_Ai_Ui {
+public class Vector3_Ai_Information extends Vector3_Ai_Ui 
+{
+	public boolean ConnectionFailed = false;
 	public Vector3_Ai_Information() throws InterruptedException
 	{
 		super();
@@ -11,7 +13,17 @@ public class Vector3_Ai_Information extends Vector3_Ai_Ui {
 		{
 			while (Connecting.isVisible())
 			{
+				if (ConnectionFailed) 
+				{
+					break;
+				}
+				
 				Thread.sleep(10);
+			}
+			
+			if (ConnectionFailed) 
+			{
+				return;
 			}
 			
 			UpdateUi();
